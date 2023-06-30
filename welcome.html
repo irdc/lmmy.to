@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ _("Welcome to Lemmy") }}
+{% end %}
+
+{% block body %}
+{{ _("In order to direct your call, tell us the Lemmy server you call home.") }}
+<form action="/welcome?to={{ url_escape(to) }}" method="post">
+	<label for="instance">{{ _("Server") }}:</label>
+	<input type="text" id="instance" name="instance" minlength="4" autofocus="" />
+	<button type="submit">{{ _("Go") }}</button>
+</form>
+{% end %}
