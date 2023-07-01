@@ -93,11 +93,11 @@ class WelcomeHandler(RequestHandler):
 	async def post(self):
 		to = self.get_query_argument('to')
 		if not to.startswith('/c'):
-			return self.redirect(f"/err")
+			return self.redirect(f"/error")
 
 		instance = self.get_body_argument('instance')
 		if not self.db.has_instance(instance):
-			return self.redirect(f"/err")
+			return self.redirect(f"/error")
 
 		self.set_cookie('instance', instance, expires_days = 365)
 		return self.redirect(to)
@@ -106,13 +106,13 @@ class WelcomeHandler(RequestHandler):
 class CommunityHandler(RequestHandler):
 	async def get(self, name, domain):
 		if not self.db.has_instance(domain):
-			return self.redirect(f"/err")
+			return self.redirect(f"/error")
 
 		if (instance := self.get_cookie('instance')) is None:
 			return self.redirect(url_concat('/welcome', { 'to': f"/c/{name}@{domain}" }))
 
 		if not self.db.has_instance(instance):
-			return self.redirect(f"/err")
+			return self.redirect(f"/error")
 
 		if domain == instance:
 			return self.redirect(f"https://{instance}/c/{name}")
