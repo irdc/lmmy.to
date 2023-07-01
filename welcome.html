@@ -5,24 +5,27 @@
 {% end %}
 
 {% block body %}
+<p>
 {{ _("In order to direct your call, tell us the Lemmy server you call home.") }}
 {{ _("We'll store it in a cookie, so you only have to do this once.") }}
+</p>
 <form action="/welcome?to={{ url_escape(to) }}" method="post">
-	<label for="instance">{{ _("Server") }}:</label>
-	<input type="text"
-	       id="instance"
-	       list="instances"
-	       name="instance"
-	       minlength="4"
-	       autofocus=""
-	       onkeydown="keydown(event);"
-	       />
-	<datalist id="instances">
-	{% for instance in instances %}
-		<option value="{{ instance }}" />
-	{% end %}
-	</datalist>
-	<input type="submit" value="{{ _('Go') }}" />
+	<div class="grouped">
+		<input type="text"
+		       id="instance"
+		       list="instances"
+		       name="instance"
+		       minlength="4"
+		       autofocus=""
+		       onkeydown="keydown(event);"
+		       placeholder="{{ _('Server') }}">
+		<datalist id="instances">
+		{% for instance in instances %}
+			<option value="{{ instance }}">
+		{% end %}
+		</datalist>
+		<input type="submit" value="{{ _('Go') }}">
+	</div>
 </form>
 {% end %}
 

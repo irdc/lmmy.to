@@ -151,7 +151,7 @@ async def main():
 		(r"/welcome", WelcomeHandler, { 'db': db }),
 		(r"/c/([\w.]+)@([a-zA-Z0-9._:-]+)", CommunityHandler, { 'db': db }),
 		(r"/error", ErrorHandler, { 'db': db })
-	])
+	], static_path = 'static')
 	app.listen(8888)
 	await asyncio.Event().wait()
 
