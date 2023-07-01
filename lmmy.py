@@ -105,6 +105,8 @@ class WelcomeHandler(RequestHandler):
 
 class CommunityHandler(RequestHandler):
 	async def get(self, name, domain):
+		name = name.rstrip('/')
+
 		if not self.db.has_instance(domain):
 			return self.redirect(f"/err")
 
@@ -147,7 +149,7 @@ async def main():
 	app = tornado.web.Application([
 		(r"/", tornado.web.RedirectHandler, { 'url': 'https://join-lemmy.org/' }),
 		(r"/welcome", WelcomeHandler, { 'db': db }),
-		(r"/c/([\w.]+)@([a-zA-Z0-9._:-]+)", CommunityHandler, { 'db': db }),
+		(r"/c/([\w.]+)@([a-zA-Z0-9._:-]+)/?", CommunityHandler, { 'db': db }),
 		(r"/error", ErrorHandler, { 'db': db })
 	])
 	app.listen(8888)
