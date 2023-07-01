@@ -3,6 +3,7 @@ import sqlite3
 
 import tornado.web, tornado.locale, tornado.httpclient
 from tornado.httputil import url_concat
+from urllib.parse import urlparse
 
 class DataContext:
 	__slots__ = 'db',
@@ -107,11 +108,18 @@ class WelcomeHandler(RequestHandler):
 
 class CommunityHandler(RequestHandler):
 	async def get(self, name, domain):
+		name = name.rstrip('/')
+
 		if not self.db.has_instance(domain):
 			return self.redirect(f"/error")
 
 		if (instance := self.get_cookie('instance')) is None:
-			return self.redirect(url_concat('/welcome', { 'to': f"/c/{name}@{domain}" }))
+			# If the user hasn't set an instance, and a referer header is available, we'll use that
+			if (referer_url := self.request.headers.get('Referer')) is not None and (referer_hostname := urlparse(referer_url).hostname) is not None and self.db.has_instance(referer_hostname):
+				instance = referer_hostname
+				self.set_cookie('instance', referer_hostname, expires_days = 365)
+			else:
+				return self.redirect(url_concat('/welcome', { 'to': f"/c/{name}@{domain}" }))
 
 		if not self.db.has_instance(instance):
 			return self.redirect(f"/error")
@@ -149,7 +157,7 @@ async def main():
 	app = tornado.web.Application([
 		(r"/", tornado.web.RedirectHandler, { 'url': 'https://join-lemmy.org/' }),
 		(r"/welcome", WelcomeHandler, { 'db': db }),
-		(r"/c/([\w.]+)@([a-zA-Z0-9._:-]+)", CommunityHandler, { 'db': db }),
+		(r"/c/([\w.]+)@([a-zA-Z0-9._:-]+)/?", CommunityHandler, { 'db': db }),
 		(r"/error", ErrorHandler, { 'db': db })
 	], static_path = 'static')
 	app.listen(8888)
