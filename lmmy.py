@@ -3,6 +3,7 @@ import sqlite3
 
 import tornado.web, tornado.locale
 from tornado.httputil import url_concat
+from urllib.parse import urlparse
 
 class DataContext:
 	__slots__ = 'db',
@@ -111,7 +112,12 @@ class CommunityHandler(RequestHandler):
 			return self.redirect(f"/err")
 
 		if (instance := self.get_cookie('instance')) is None:
-			return self.redirect(url_concat('/welcome', { 'to': f"/c/{name}@{domain}" }))
+			# If the user hasn't set an instance, and a referer header is available, we'll use that
+			if (referer_url := self.request.headers.get('Referer')) is not None and (referer_hostname := urlparse(referer_url).hostname) is not None and self.db.has_instance(referer_hostname):
+				instance = referer_hostname
+				self.set_cookie('instance', referer_hostname, expires_days = 365)
+			else:
+				return self.redirect(url_concat('/welcome', { 'to': f"/c/{name}@{domain}" }))
 
 		if not self.db.has_instance(instance):
 			return self.redirect(f"/err")
