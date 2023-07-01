@@ -51,7 +51,7 @@
 		}
 
 		form {
-			margin: 0 auto 0 auto;
+			margin: 0 auto 1em auto;
 			width: fit-content;
 		}
 
@@ -85,10 +85,20 @@
 			</a>
 		</div>
 	</nav>
-	<div class="container">
-		<h1>{% block title %}lmmy.to{% end %}</h1>
+	<section class="container">
+		<header>
+			<h1>{% block title %}lmmy.to{% end %}</h1>
+		</header>
 		{% block body %}
 		{% end %}
-	</div>
+		<footer>
+			<p>
+				{{ _("Made with ") }}
+				<a href="https://www.tornadoweb.org">Tornado</a>
+				{{ _(" and ") }}
+				<a href="https://jenil.github.io/chota">Chota</a>
+			</p>
+		</footer>
+	</section>
 </body>
 </html>
