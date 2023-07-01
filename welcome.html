@@ -9,12 +9,29 @@
 {{ _("We'll store it in a cookie, so you only have to do this once.") }}
 <form action="/welcome?to={{ url_escape(to) }}" method="post">
 	<label for="instance">{{ _("Server") }}:</label>
-	<input type="text" id="instance" list="instances" name="instance" minlength="4" autofocus="" />
+	<input type="text"
+	       id="instance"
+	       list="instances"
+	       name="instance"
+	       minlength="4"
+	       autofocus=""
+	       onkeydown="keydown(event);"
+	       />
 	<datalist id="instances">
 	{% for instance in instances %}
 		<option value="{{ instance }}" />
 	{% end %}
 	</datalist>
-	<button type="submit">{{ _("Go") }}</button>
+	<input type="submit" value="{{ _("Go") }}" />
 </form>
+{% end %}
+
+{% block script %}
+function keydown(event)
+{
+	if (!event.isComposing && event.keyCode == 13) {
+		event.preventDefault();
+		event.target.form.submit();
+	}
+}
 {% end %}
