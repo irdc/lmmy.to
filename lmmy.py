@@ -13,7 +13,8 @@ class DataContext:
 	def instances(self):
 		return { instance[0] for instance in self.db.execute('''
 				SELECT "domain"
-				  FROM "instances"''').fetchall() }
+				  FROM "instances"
+				 ORDER BY "domain"''').fetchall() }
 
 	def has_instance(self, domain):
 		return self.db.execute('''
@@ -88,7 +89,8 @@ class RequestHandler(tornado.web.RequestHandler):
 class WelcomeHandler(RequestHandler):
 	async def get(self):
 		to = self.get_query_argument('to')
-		await self.render('welcome.html', to = to)
+		instances = self.db.instances()
+		await self.render('welcome.html', to = to, instances = instances)
 
 	async def post(self):
 		to = self.get_query_argument('to')
